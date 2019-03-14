@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 var path = require('path');
+
+const port = process.env.PORT || 3000;
+
 const robot = require('./shared/route/robot');
 const humain = require('./shared/route/humain');
 const index = require('./shared/route/index');
@@ -9,7 +12,8 @@ const index = require('./shared/route/index');
 var logger = require('morgan');
 app.use(logger('dev'));
 
-app.set('views', './views');
+
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //body parser
@@ -54,6 +58,7 @@ app.use(function(req, res, next){
 			}
 	
 		}else{
+			
 			if(matchRobot) newUri = newUri.replace("/robot", "");
 			if(!matchHumain) newUri = "/humain" + newUri;
 			console.log("newUri", newUri) 
@@ -69,6 +74,8 @@ app.use(function(req, res, next){
 	}
 });
 
+app.use(express.static(path.join(__dirname, 'assets')));
+
 app.use("/robot", robot);
 app.use("/humain", humain);
 app.use(index);
@@ -80,4 +87,4 @@ app.get('*', (req, res) => {
 })
 module.exports = app;
 
-app.listen(3000);
+app.listen(port);
