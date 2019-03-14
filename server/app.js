@@ -22,63 +22,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(function(req, res, next){
-    
-	ua = req.headers['user-agent'];
-	if( /firefox/i.test(ua) )
-		browser = 'firefox';
-	else if( /chrome/i.test(ua) )
-		browser = 'chrome';
-	else if( /safari/i.test(ua) )
-		browser = 'safari';
-	else if( /msie/i.test(ua) )
-		browser = 'msie';
-	else
-		browser = 'unknown';
-
-	console.log("browser", browser);
-	console.log("req.url", req.url);
-	if (req.originalUrl !== '/favicon.ico') {
-
-		let matchRobot = req.url.match(/^\/(robot)/);
-		let matchHumain = req.url.match(/^\/(humain)/);
-
-		console.log("robot match", matchRobot);
-		console.log("humain match", matchHumain);
-		let newUri = req.url;
-		console.log("newUri before", newUri) 
-
-		if(browser === 'unknown'){
-			if(matchHumain) newUri = newUri.replace("/humain", "");
-			if(!matchRobot) newUri = "/robot" + newUri;
-			console.log("newUri", newUri) 
-			if(req.url != newUri){
-				res.redirect(newUri);
-			}else{
-				next();
-			}
-	
-		}else{
-			
-			if(matchRobot) newUri = newUri.replace("/robot", "");
-			if(!matchHumain) newUri = "/humain" + newUri;
-			console.log("newUri", newUri) 
-			if(req.url != newUri) {
-				res.redirect(newUri);
-			}else{
-				next();
-			}
-		}
-	}else{
-		console.log("call favicon")
-		next();
-	}
+	return  req.headers['user-agent'].match(/firefox|chrome|safari|msie/i)  ? humain(req, res, next) : robot(req, res, next);
 });
 
 app.use(express.static(path.join(__dirname, 'assets')));
 
-app.use("/robot", robot);
-app.use("/humain", humain);
-app.use(index);
+//app.use("/robot", robot);
+//app.use("/humain", humain);
+//app.use(index);
 
 //routes
 app.get('*', (req, res) => {
@@ -87,4 +38,6 @@ app.get('*', (req, res) => {
 })
 module.exports = app;
 
-app.listen(port);
+app.listen(port, function(){
+	console.log("ssr-log listen on port: " + port)
+});
