@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
 var path = require('path');
+var https = require('https');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
+const useSsl = process.env.USE_SLL || false;
 
 const robot = require('./shared/route/robot');
 const humain = require('./shared/route/humain');
@@ -26,6 +28,7 @@ app.use(function(req, res, next){
 });
 
 app.use(express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname + 'uploads')));
 
 //app.use("/robot", robot);
 //app.use("/humain", humain);
@@ -38,6 +41,14 @@ app.get('*', (req, res) => {
 })
 module.exports = app;
 
-app.listen(port, function(){
-	console.log("ssr-log listen on port: " + port)
-});
+if(useSsl){
+	/*const options = {
+		key: fs.readFileSync('../../ssl-keys/key.pem'),
+		cert: fs.readFileSync('../../ssl-keys/key.pem')
+	  }
+	const server = https.createServer(options, app).listen(443);*/
+}else{
+	app.listen(port, function(){
+		console.log("ssr-log listen on port: " + port)
+	});
+}
