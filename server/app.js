@@ -23,12 +23,12 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname + 'uploads')));
+
 app.use(function(req, res, next){
 	return  req.headers['user-agent'].match(/firefox|chrome|safari|msie/i)  ? humain(req, res, next) : robot(req, res, next);
 });
-
-app.use(express.static(path.join(__dirname, 'assets')));
-app.use(express.static(path.join(__dirname + 'uploads')));
 
 //app.use("/robot", robot);
 //app.use("/humain", humain);
